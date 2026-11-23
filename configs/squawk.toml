@@ -1,0 +1,45 @@
+# Squawk Configuration File (.squawk.toml)
+# Schema Migration Linter Ruleset
+
+target_version = "15.0"
+
+exclude = [
+  "db/schema.sql",
+  "db/structure.sql",
+  "db/seeds.rb",
+  "migrations/archive/*.sql"
+]
+
+[rules]
+# Lock Risk: Adding columns with non-null constraints without default values
+ban-add-column-not-null-no-default = "error"
+
+# Lock Risk: Adding NOT NULL constraint to existing column without validation
+ban-add-not-null-constraint = "error"
+
+# Lock Risk: Creating indexes non-concurrently on populated tables
+require-concurrent-index = "error"
+
+# Lock Risk: Removing tables without verifying usage
+ban-drop-table = "warning"
+
+# Lock Risk: Removing columns directly (requires multi-step deployment)
+ban-drop-column = "warning"
+
+# Lock Risk: Changing column types directly (causes full table rewrite)
+ban-change-column-type = "error"
+
+# Lock Risk: Renaming columns or tables (breaks active application instances)
+ban-rename-column = "error"
+ban-rename-table = "error"
+
+# Lock Risk: Setting DEFAULT values on existing large tables without timeout control
+ban-set-default = "warning"
+
+# Lock Risk: Adding foreign key constraints without NOT VALID
+require-foreign-key-not-valid = "error"
+
+# Enforcement: Explicit lock timeout specification in migration transactions
+require-lock-timeout = "error"
+
+disallow-raw-sql-execution = "ignore"
