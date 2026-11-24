@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>SeemlyOps SKU Mapping — Master Architecture, Audit Findings & Execution Plan</title>
+  <style>
+    @layer tokens, base, layout, components, utilities;
+
+    @layer tokens {
+      :root {
+        /* Raw palette */
+        --raw-bg-light: #f7f8fb;
+        --raw-bg-dark: #0d1117;
+        --raw-surface-light: #ffffff;
+        --raw-surface-dark: #151b23;
+        --raw-surface-alt-light: #eef1f7;
+        --raw-surface-alt-dark: #1c2430;
+        --raw-border-light: #d6dce8;
+        --raw-border-dark: #2c3748;
+        --raw-text-light: #141a24;
+        --raw-text-dark: #e6ecf5;
+        --raw-muted-light: #526075;
+        --raw-muted-dark: #93a3b8;
+
+        --raw-brand-light: #1e4ed8;
+        --raw-brand-dark: #6ca0ff;
+        --raw-brand-soft-light: #e8efff;
+        --raw-brand-soft-dark: #16294a;
+
+        --raw-ok-light: #0f7648;
+        --raw-ok-dark: #3dd68c;
+        --raw-ok-soft-light: #e6f7ee;
+        --raw-ok-soft-dark: #123326;
+
+        --raw-warn-light: #a15c07;
+        --raw-warn-dark: #f5b942;
+        --raw-warn-soft-light: #fef5e3;
+        --raw-warn-soft-dark: #382910;
+
+        --raw-danger-light: #b91c1c;
+        --raw-danger-dark: #ff7b7b;
+        --raw-danger-soft-light: #fdeaea;
+        --raw-danger-soft-dark: #3c181d;
+
+        --raw-purple-light: #6d28d9;
+        --raw-purple-dark: #b695ff;
+        --raw-purple-soft-light: #f1ebff;
+        --raw-purple-soft-dark: #291e47;
+
+        /* Semantic fallback tokens (Light default) */
+        --bg: var(--raw-bg-light);
+        --surface: var(--raw-surface-light);
+        --surface-alt: var(--raw-surface-alt-light);
+        --border: var(--raw-border-light);
+        --text: var(--raw-text-light);
+        --muted: var(--raw-muted-light);
+        --brand: var(--raw-brand-light);
+        --brand-soft: var(--raw-brand-soft-light);
+        --ok: var(--raw-ok-light);
+        --ok-soft: var(--raw-ok-soft-light);
+        --warn: var(--raw-warn-light);
+        --warn-soft: var(--raw-warn-soft-light);
+        --danger: var(--raw-danger-light);
+        --danger-soft: var(--raw-danger-soft-light);
+        --purple: var(--raw-purple-light);
+        --purple-soft: var(--raw-purple-soft-light);
+
+        --scrollbar-track: #eaedf4;
+        --scrollbar-thumb: #95a2b8;
+
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --radius-pill: 999px;
+        --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+        --shadow-md: 0 6px 20px rgb(15 23 42 / 0.08);
+        --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+        color-scheme: light dark;
+        accent-color: var(--brand);
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: var(--raw-bg-dark);
+          --surface: var(--raw-surface-dark);
+          --surface-alt: var(--raw-surface-alt-dark);
+          --border: var(--raw-border-dark);
+          --text: var(--raw-text-dark);
+          --muted: var(--raw-muted-dark);
+          --brand: var(--raw-brand-dark);
+          --brand-soft: var(--raw-brand-soft-dark);
+          --ok: var(--raw-ok-dark);
+          --ok-soft: var(--raw-ok-soft-dark);
+          --warn: var(--raw-warn-dark);
+          --warn-soft: var(--raw-warn-soft-dark);
+          --danger: var(--raw-danger-dark);
+          --danger-soft: var(--raw-danger-soft-dark);
+          --purple: var(--raw-purple-dark);
+          --purple-soft: var(--raw-purple-soft-dark);
+          --scrollbar-track: #151b23;
+          --scrollbar-thumb: #4b596f;
+          --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+          --shadow-md: 0 8px 24px rgb(0 0 0 / 0.45);
+        }
+      }
+
+      :root[data-theme="light"] {
+        color-scheme: light;
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: var(--raw-bg-dark);
+        --surface: var(--raw-surface-dark);
+        --surface-alt: var(--raw-surface-alt-dark);
+        --border: var(--raw-border-dark);
+        --text: var(--raw-text-dark);
+        --muted: var(--raw-muted-dark);
+        --brand: var(--raw-brand-dark);
+        --brand-soft: var(--raw-brand-soft-dark);
+        --ok: var(--raw-ok-dark);
+        --ok-soft: var(--raw-ok-soft-dark);
+        --warn: var(--raw-warn-dark);
+        --warn-soft: var(--raw-warn-soft-dark);
+        --danger: var(--raw-danger-dark);
+        --danger-soft: var(--raw-danger-soft-dark);
+        --purple: var(--raw-purple-dark);
+        --purple-soft: var(--raw-purple-soft-dark);
+        --scrollbar-track: #151b23;
+        --scrollbar-thumb: #4b596f;
+        --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+        --shadow-md: 0 8px 24px rgb(0 0 0 / 0.45);
+      }
+
+      @supports (color: light-dark(white, black)) {
+        :root {
+          --bg: light-dark(var(--raw-bg-light), var(--raw-bg-dark));
+          --surface: light-dark(var(--raw-surface-light), var(--raw-surface-dark));
+          --surface-alt: light-dark(var(--raw-surface-alt-light), var(--raw-surface-alt-dark));
+          --border: light-dark(var(--raw-border-light), var(--raw-border-dark));
+          --text: light-dark(var(--raw-text-light), var(--raw-text-dark));
+          --muted: light-dark(var(--raw-muted-light), var(--raw-muted-dark));
+          --brand: light-dark(var(--raw-brand-light), var(--raw-brand-dark));
+          --brand-soft: light-dark(var(--raw-brand-soft-light), var(--raw-brand-soft-dark));
+          --ok: light-dark(var(--raw-ok-light), var(--raw-ok-dark));
+          --ok-soft: light-dark(var(--raw-ok-soft-light), var(--raw-ok-soft-dark));
+          --warn: light-dark(var(--raw-warn-light), var(--raw-warn-dark));
+          --warn-soft: light-dark(var(--raw-warn-soft-light), var(--raw-warn-soft-dark));
+          --danger: light-dark(var(--raw-danger-light), var(--raw-danger-dark));
+          --danger-soft: light-dark(var(--raw-danger-soft-light), var(--raw-danger-soft-dark));
+          --purple: light-dark(var(--raw-purple-light), var(--raw-purple-dark));
+          --purple-soft: light-dark(var(--raw-purple-soft-light), var(--raw-purple-soft-dark));
+          --scrollbar-track: light-dark(#eaedf4, #151b23);
+          --scrollbar-thumb: light-dark(#8b99b0, #55647c);
+        }
+      }
+
+      @supports not (scrollbar-color: auto) {
+        html::-webkit-scrollbar,
+        pre::-webkit-scrollbar,
+        .table-wrap::-webkit-scrollbar {
+          width: 10px;
+          height: 10px;
+        }
+        html::-webkit-scrollbar-thumb,
+        pre::-webkit-scrollbar-thumb,
+        .table-wrap::-webkit-scrollbar-thumb {
+          background: var(--scrollbar-thumb);
+          border-radius: 6px;
+        }
+        html::-webkit-scrollbar-track,
+        pre::-webkit-scrollbar-track,
+        .table-wrap::-webkit-scrollbar-track {
+          background: var(--scrollbar-track);
+        }
+      }
+    }
+
+    @layer base {
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      :where(h1, h2, h3, h4, p, ul, ol, dl, figure, pre, blockquote) {
+        box-sizing: border-box;
+      }
+
+      h1, h2, h3 {
+        line-height: 1.25;
+        letter-spacing: -0.015em;
+        margin-block: 0 0.5rem;
+      }
+
+      h1 { font-size: clamp(1.65rem, 2.5vw, 2.25rem); }
+      h2 { font-size: clamp(1.25rem, 1.8vw, 1.6rem); }
+      h3 { font-size: 1.08rem; }
+
+      p { margin-block: 0 0.85rem; }
+
+      a {
+        color: var(--brand);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 2px;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.88em;
+        background: var(--surface-alt);
+        padding: 0.12em 0.4em;
+        border-radius: 5px;
+        border: 1px solid var(--border);
+      }
+
+      pre {
+        margin: 0;
+        padding: 1rem 1.15rem;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        overflow-x: auto;
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      pre code {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        font-size: inherit;
+      }
+
+      :focus-visible {
+        outline: 2.5px solid var(--brand);
+        outline-offset: 2px;
+      }
+    }
+
+    @layer layout {
+      .container {
+        inline-size: min(1200px, 100% - 2rem);
+        margin-inline: auto;
+      }
+
+      .site-header {
+        background: var(--surface);
+        border-block-end: 1px solid var(--border);
+        padding-block: 1.5rem 1.25rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .header-top {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .top-nav {
+        margin-block-start: 1.15rem;
+        padding-block-start: 0.9rem;
+        border-block-start: 1px solid var(--border);
+      }
+
+      .top-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+      }
+
+      .top-nav a {
+        display: inline-block;
+        padding: 0.32rem 0.72rem;
+        border-radius: var(--radius-pill);
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        font-size: 0.86rem;
+        font-weight: 550;
+        color: var(--text);
+
+        &:hover {
+          border-color: var(--brand);
+          color: var(--brand);
+        }
+      }
+
+      main.container {
+        padding-block: 1.75rem 3.5rem;
+        display: grid;
+        gap: 2.25rem;
+      }
+
+      section.panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: clamp(1.1rem, 2.2vw, 1.8rem);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+        gap: 0.85rem;
+        margin-block-start: 1rem;
+      }
+
+      .site-footer {
+        border-block-start: 1px solid var(--border);
+        padding-block: 1.4rem 2.2rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+    }
+
+    @layer components {
+      .eyebrow {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--brand);
+        margin-block-end: 0.35rem;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        max-inline-size: 74ch;
+        margin-block-end: 0.9rem;
+      }
+
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.22rem 0.6rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      .badge.brand { background: var(--brand-soft); color: var(--brand); border-color: color-mix(in oklab, var(--brand) 30%, transparent); }
+      .badge.ok { background: var(--ok-soft); color: var(--ok); border-color: color-mix(in oklab, var(--ok) 30%, transparent); }
+      .badge.warn { background: var(--warn-soft); color: var(--warn); border-color: color-mix(in oklab, var(--warn) 35%, transparent); }
+      .badge.danger { background: var(--danger-soft); color: var(--danger); border-color: color-mix(in oklab, var(--danger) 35%, transparent); }
+      .badge.purple { background: var(--purple-soft); color: var(--purple); border-color: color-mix(in oklab, var(--purple) 30%, transparent); }
+
+      .theme-controls {
+        display: inline-flex;
+        padding: 0.25rem;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-pill);
+        gap: 0.2rem;
+      }
+
+      .btn,
+      .theme-btn,
+      .filter-btn {
+        font-family: inherit;
+        font-size: 0.84rem;
+        font-weight: 600;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        padding: 0.36rem 0.8rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .theme-btn {
+        border-color: transparent;
+        background: transparent;
+        padding: 0.28rem 0.7rem;
+      }
+
+      .theme-btn[aria-pressed="true"],
+      .filter-btn[aria-pressed="true"] {
+        background: var(--brand);
+        color: #ffffff;
+        border-color: var(--brand);
+      }
+
+      .btn:hover:not(:disabled),
+      .filter-btn:hover:not(:disabled):not([aria-pressed="true"]) {
+        border-color: var(--brand);
+        color: var(--brand);
+      }
+
+      .btn-primary {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #ffffff;
+
+        &:hover:not(:disabled) {
+          color: #ffffff;
+          filter: brightness(1.08);
+        }
+      }
+
+      .kpi-card {
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 0.9rem 1rem;
+      }
+
+      .kpi-value {
+        font-size: 1.55rem;
+        font-weight: 750;
+        line-height: 1.1;
+        margin-block-end: 0.25rem;
+      }
+
+      .kpi-label {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .callout {
+        border: 1px solid var(--border);
+        border-inline-start: 4px solid var(--brand);
+        background: var(--surface-alt);
+        border-radius: var(--radius-sm);
+        padding: 0.9rem 1.05rem;
+        margin-block: 0.9rem;
+      }
+
+      .callout.ok { border-inline-start-color: var(--ok); background: var(--ok-soft); }
+      .callout.warn { border-inline-start-color: var(--warn); background: var(--warn-soft); }
+      .callout.danger { border-inline-start-color: var(--danger); background: var(--danger-soft); }
+
+      .card {
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 1rem 1.1rem;
+      }
+
+      figure.diagram-card {
+        margin: 1rem 0 0;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+      }
+
+      figure.diagram-card svg {
+        display: block;
+        inline-size: 100%;
+        block-size: auto;
+      }
+
+      figure.diagram-card figcaption {
+        margin-block-start: 0.65rem;
+        font-size: 0.86rem;
+        color: var(--muted);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        margin-block: 0.85rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.89rem;
+        text-align: start;
+      }
+
+      th, td {
+        padding: 0.62rem 0.78rem;
+        border-block-end: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      thead th {
+        background: var(--surface-alt);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      tbody tr:last-child td {
+        border-block-end: 0;
+      }
+
+      .num {
+        text-align: end;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Accordion / Details following modern-web-guidance */
+      .accordion-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        margin-block: 0.85rem 1rem;
+      }
+
+      search {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1 1 320px;
+      }
+
+      .search-input {
+        font-family: inherit;
+        font-size: 0.9rem;
+        padding: 0.42rem 0.75rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+        color: var(--text);
+        min-inline-size: 220px;
+        flex: 1 1 220px;
+      }
+
+      .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-block-end: 0.9rem;
+      }
+
+      .accordion {
+        display: grid;
+        gap: 0.65rem;
+      }
+
+      .accordion details {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface-alt);
+        overflow: clip;
+      }
+
+      .accordion details[hidden] {
+        display: none;
+      }
+
+      .accordion summary {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .accordion summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .accordion summary::before {
+        content: "";
+        inline-size: 0.7em;
+        block-size: 0.7em;
+        flex-shrink: 0;
+        background-color: currentColor;
+        clip-path: polygon(15% 25%, 85% 25%, 50% 80%);
+        rotate: -90deg;
+      }
+
+      .accordion summary:dir(rtl)::before {
+        rotate: 90deg;
+      }
+
+      .accordion details[open] > summary::before {
+        rotate: 0deg;
+      }
+
+      .accordion summary:hover {
+        background: color-mix(in oklab, var(--brand) 7%, var(--surface-alt));
+      }
+
+      .accordion details::details-content {
+        interpolate-size: allow-keywords;
+        overflow: clip;
+        contain: layout;
+      }
+
+      .accordion details:not([open])::details-content {
+        block-size: 0;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .accordion summary::before {
+          transition: rotate 0.2s ease;
+        }
+        .accordion details::details-content {
+          transition: block-size 0.25s ease-in-out, content-visibility 0.25s ease-in-out allow-discrete;
+        }
+      }
+
+      .ticket-body {
+        padding: 0.95rem 1.05rem 1.05rem;
+        border-block-start: 1px solid var(--border);
+        background: var(--surface);
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      [command="--toggle-all"][aria-expanded="true"] .expand-label,
+      [command="--toggle-all"][aria-expanded="false"] .collapse-label {
+        display: none;
+      }
+
+      .prompt-box-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        margin-block-end: 0.65rem;
+      }
+
+      .copy-status {
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--ok);
+      }
+
+      .phase-chip {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        padding: 0.14rem 0.5rem;
+        border-radius: 6px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+      }
+    }
+
+    @layer utilities {
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .muted { color: var(--muted); }
+      .mt-1 { margin-block-start: 0.75rem; }
+      .mb-0 { margin-block-end: 0; }
+    }
+
+    @media print {
+      .theme-controls, .top-nav, .filter-bar, .accordion-toolbar button, .copy-btn {
+        display: none;
+      }
+      section.panel {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="header-top">
+        <div>
+          <p class="eyebrow">AuditSkill Phase 2 Review &bull; Self-Checked Master Blueprint</p>
+          <h1>SeemlyOps SKU Mapping: Unified Architecture, Findings &amp; Execution Plan</h1>
+          <p class="subtitle">
+            Reconciling the <strong>AuditSkill 6-dimension code audit</strong>, the <strong>Gemini Live-DB Postgres audit</strong>,
+            the already-shipped <code>sku-mapping-rebuild</code> (<code>19345270</code> / <code>734f2fd7</code>), and the <code>sku-review</code> owner backlog into one single source of truth before Claude Code executes Phase 3.
+          </p>
+          <div class="badge-row">
+            <span class="badge brand">App Baseline: main @ 734f2fd7</span>
+            <span class="badge ok">Frozen ERP md5: 1eaf531368b23a3f56f3bf4ebe0ce67a</span>
+            <span class="badge ok">Read-Only Baseline: 0 files touched in seemlyops / Jou-ws</span>
+            <span class="badge warn">Gate: Awaiting Operator Decisions #1–#7</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+          <button type="button" id="download-self-btn" class="btn btn-primary">Download HTML</button>
+          <div class="theme-controls" role="group" aria-label="Color theme">
+            <button type="button" class="theme-btn" data-set-theme="auto" aria-pressed="true">Auto</button>
+            <button type="button" class="theme-btn" data-set-theme="light" aria-pressed="false">Light</button>
+            <button type="button" class="theme-btn" data-set-theme="dark" aria-pressed="false">Dark</button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="top-nav" aria-label="Document sections">
+        <ul>
+          <li><a href="#sec-logic">1. Business Logic &amp; Reality</a></li>
+          <li><a href="#sec-diagrams">2. Goal Architecture &amp; Diagrams</a></li>
+          <li><a href="#sec-snapshot">3. Live DB vs Shipped Rebuild</a></li>
+          <li><a href="#sec-books">4. Books &amp; Proof Canons</a></li>
+          <li><a href="#sec-tickets">5. Interactive Findings &amp; Tickets (TCK-001–010)</a></li>
+          <li><a href="#sec-decisions">6. Your 7 Decisions &amp; Pre-Wave</a></li>
+          <li><a href="#sec-handoff">7. Claude Code Prompt &amp; MD Files</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- SECTION 1 -->
+    <section id="sec-logic" class="panel" aria-labelledby="h-logic">
+      <p class="eyebrow">1. Core Mental Model &amp; Executive Summary</p>
+      <h2 id="h-logic">How Your N:1 Showroom-to-ERP Wiring Engine Works</h2>
+      <p>
+        Your domain design is already mathematically clean: <strong>every physical garment variant lives once in the canonical catalogue</strong>
+        (<code>products &rarr; variants.sku</code>, matching your accountant's ERP Item Master), while every Cairo showroom
+        (<code>Genz</code>, <code>locally</code>, <code>lokal</code>, <code>mr.local</code>, <code>Rizz</code>, <code>Sash</code>, <code>Shopify</code>)
+        is wired <strong>N:1</strong> into that single canonical <code>variant_id</code> via its portal barcode(s) (<code>channel_codes</code>)
+        and/or exact showroom product title(s) (<code>channel_aliases</code>).
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>What Happens on Daily Sales Import</h3>
+          <ol class="mb-0">
+            <li>Showroom sheet/API arrives with mixed seasonal codes (<code>channel_code</code>) or text titles (<code>channel_product</code>).</li>
+            <li><code>resolveMappings()</code> checks active <code>channel_codes</code> (Tier 1), then normalized <code>channel_aliases</code> (Tier 2), then provisional <code>channel_list_prices</code> (Tier 3).</li>
+            <li>Matched lines stamp <code>sales_lines.seemly_sku = variants.sku</code>; unknown codes stay on hold / "To confirm" queue — never dropping sales or inventing SKUs.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Why It Still Felt Fragile at "97%"</h3>
+          <ol class="mb-0">
+            <li><strong>Code/Security Bugs Found by AuditSkill</strong>: <code>finance</code> blinded by wrong RLS on holds, <code>rpc_map_unmapped_line</code> crashing with <code>23505</code> on spacing/case twins and skipping <code>size</code>, collapsed alias queue groups, unindexed 500-loop batch locks, and inner RPCs callable directly.</li>
+            <li><strong>Missing Lifecycle Gates Found by Gemini Live-DB Audit</strong>: no Postgres <code>erp_item_master</code> table, no <code>verified</code> vs seeded state, no forward-only seasonal remap (vs history overwrite), and no auto-upgrade of provisional <code>inventory</code> lines.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="kpi-grid" aria-label="Key baseline metrics">
+        <div class="kpi-card">
+          <div class="kpi-value">1,378</div>
+          <div class="kpi-label">Active canonical SKUs in <code>variants</code> (live snapshot)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">18,741</div>
+          <div class="kpi-label">Resolved sold lines (13,282 sku + 4,296 code + 1,010 alias + 87 inv + 66 manual)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">9 + 5</div>
+          <div class="kpi-label">9 AuditSkill code defects + 5 Gemini DB lifecycle gaps</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">10 Tickets</div>
+          <div class="kpi-label"><code>SKU-TCK-001</code>..<code>010</code> across Phases A–F</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">280 / 280</div>
+          <div class="kpi-label">Baseline SKU-mapping tests passing + 0 tsc/eslint errors</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: VISUAL DIAGRAMS -->
+    <section id="sec-diagrams" class="panel" aria-labelledby="h-diagrams">
+      <p class="eyebrow">2. Goal Architecture &amp; Visual Workflow</p>
+      <h2 id="h-diagrams">Where the App Should Match (`GOAL-ARCHITECTURE.md`)</h2>
+      <p class="subtitle">
+        All repairs and strategic upgrades sit strictly <strong>upstream</strong> of the frozen ERP exporter (<code>src/lib/erp/**</code> + <code>rpc_erp_export_source</code>).
+        View the visual blueprints below before approving Phase 3.
+      </p>
+
+      <!-- DIAGRAM 1: 3-LAYER ARCHITECTURE -->
+      <figure class="diagram-card">
+        <svg viewBox="0 0 980 410" role="img" aria-labelledby="diag1-title">
+          <title id="diag1-title">Three-Layer SeemlyOps Target SKU Mapping Architecture</title>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor"></path>
+            </marker>
+          </defs>
+
+          <!-- Layer 1: ERP Authoritative Source -->
+          <rect x="20" y="18" width="940" height="92" rx="10" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.5"></rect>
+          <text x="38" y="42" font-size="13" font-weight="700" fill="var(--brand)">LAYER 1 — AUTHORITATIVE ERP ITEM MASTER GATE (Phase E · SKU-TCK-008)</text>
+          <rect x="40" y="54" width="275" height="44" rx="7" fill="var(--surface)" stroke="var(--brand)"></rect>
+          <text x="54" y="73" font-size="12" font-weight="700" fill="var(--text)">public.erp_item_master</text>
+          <text x="54" y="90" font-size="11" fill="var(--muted)">Accountant CSV/API sync · exact spelling (e.g. 2042-xs)</text>
+
+          <rect x="355" y="54" width="270" height="44" rx="7" fill="var(--surface)" stroke="var(--brand)"></rect>
+          <text x="369" y="73" font-size="12" font-weight="700" fill="var(--text)">Canonical variants.sku</text>
+          <text x="369" y="90" font-size="11" fill="var(--muted)">Single N:1 target · refuses missing non-ERP SKUs</text>
+
+          <rect x="665" y="54" width="275" height="44" rx="7" fill="var(--surface)" stroke="var(--brand)"></rect>
+          <text x="679" y="73" font-size="12" font-weight="700" fill="var(--text)">Pre-Export SQL &amp; Batch Check</text>
+          <text x="679" y="90" font-size="11" fill="var(--muted)">Eliminates 1007-XS ghost SKU class automatically</text>
+
+          <line x1="315" y1="76" x2="352" y2="76" stroke="var(--brand)" stroke-width="2" marker-end="url(#arrow)"></line>
+          <line x1="625" y1="76" x2="662" y2="76" stroke="var(--brand)" stroke-width="2" marker-end="url(#arrow)"></line>
+
+          <!-- Vertical connector L1 -> L2 -->
+          <line x1="490" y1="110" x2="490" y2="136" stroke="var(--text)" stroke-width="2" marker-end="url(#arrow)"></line>
+
+          <!-- Layer 2: Unified Showroom Wiring -->
+          <rect x="20" y="138" width="940" height="122" rx="10" fill="var(--purple-soft)" stroke="var(--purple)" stroke-width="1.5"></rect>
+          <text x="38" y="162" font-size="13" font-weight="700" fill="var(--purple)">LAYER 2 — UNIFIED SHOWROOM WIRING, PROVENANCE &amp; MAP-ONCE LISTINGS (Phases A–C, E–F)</text>
+
+          <rect x="40" y="176" width="205" height="70" rx="7" fill="var(--surface)" stroke="var(--purple)"></rect>
+          <text x="52" y="196" font-size="12" font-weight="700" fill="var(--text)">channel_listings (TCK-010)</text>
+          <text x="52" y="213" font-size="11" fill="var(--muted)">Map BEFORE first sale</text>
+          <text x="52" y="229" font-size="11" fill="var(--muted)">Genz 0/0 + portal stock sheets</text>
+
+          <rect x="268" y="176" width="235" height="70" rx="7" fill="var(--surface)" stroke="var(--purple)"></rect>
+          <text x="280" y="196" font-size="12" font-weight="700" fill="var(--text)">N:1 Codes &amp; Aliases (TCK-009)</text>
+          <text x="280" y="213" font-size="11" fill="var(--muted)">verification_status + valid_from/to</text>
+          <text x="280" y="229" font-size="11" fill="var(--muted)">forward_only vs rewrite_all remaps</text>
+
+          <rect x="526" y="176" width="200" height="70" rx="7" fill="var(--surface)" stroke="var(--purple)"></rect>
+          <text x="538" y="196" font-size="12" font-weight="700" fill="var(--text)">COLLATE "C" + Guards</text>
+          <text x="538" y="213" font-size="11" fill="var(--muted)">mapping_code_key / alias_key</text>
+          <text x="538" y="229" font-size="11" fill="var(--muted)">DB + TS Genz guard (ONE ok)</text>
+
+          <rect x="748" y="176" width="192" height="70" rx="7" fill="var(--surface)" stroke="var(--purple)"></rect>
+          <text x="760" y="196" font-size="12" font-weight="700" fill="var(--text)">Health &amp; RLS (TCK-001/009)</text>
+          <text x="760" y="213" font-size="11" fill="var(--muted)">is_mapping_operator_role()</text>
+          <text x="760" y="229" font-size="11" fill="var(--muted)">rpc_wiring_health_audit()</text>
+
+          <line x1="245" y1="211" x2="265" y2="211" stroke="var(--purple)" stroke-width="2" marker-end="url(#arrow)"></line>
+
+          <!-- Vertical connector L2 -> L3 -->
+          <line x1="490" y1="260" x2="490" y2="286" stroke="var(--text)" stroke-width="2" marker-end="url(#arrow)"></line>
+
+          <!-- Layer 3: Hardened Ledger & Frozen ERP -->
+          <rect x="20" y="288" width="940" height="106" rx="10" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.5"></rect>
+          <text x="38" y="312" font-size="13" font-weight="700" fill="var(--ok)">LAYER 3 — HARDENED LEDGER RESOLUTION &amp; FROZEN ERP EXPORT BOUNDARY</text>
+
+          <rect x="40" y="324" width="275" height="54" rx="7" fill="var(--surface)" stroke="var(--ok)"></rect>
+          <text x="52" y="344" font-size="12" font-weight="700" fill="var(--text)">Indexed Ledger (sales_lines)</text>
+          <text x="52" y="361" font-size="11" fill="var(--muted)">idx_sales_lines_channel_code/alias_key</text>
+
+          <rect x="342" y="324" width="285" height="54" rx="7" fill="var(--surface)" stroke="var(--ok)"></rect>
+          <text x="354" y="344" font-size="12" font-weight="700" fill="var(--text)">Single Write Gateway + Undo</text>
+          <text x="354" y="361" font-size="11" fill="var(--muted)">rpc_admin_mapping_edit_with_impact · atomic size</text>
+
+          <rect x="654" y="324" width="286" height="54" rx="7" fill="var(--danger-soft)" stroke="var(--danger)" stroke-width="2"></rect>
+          <text x="666" y="344" font-size="12" font-weight="700" fill="var(--danger)">FROZEN ERP EXPORT ZONE</text>
+          <text x="666" y="361" font-size="11" fill="var(--text)">src/lib/erp/** + rpc_erp_export_source UNTOUCHED</text>
+
+          <line x1="315" y1="351" x2="339" y2="351" stroke="var(--ok)" stroke-width="2" marker-end="url(#arrow)"></line>
+          <line x1="627" y1="351" x2="650" y2="351" stroke="var(--danger)" stroke-width="2" marker-end="url(#arrow)"></line>
+        </svg>
+        <figcaption><strong>Figure 1:</strong> Three-layer target architecture combining AuditSkill security/SQL repairs (Layers 2–3) with Gemini Live-DB lifecycle gates (Layers 1–2), leaving the ERP exporter strictly untouched.</figcaption>
+      </figure>
+
+      <!-- DIAGRAM 2: EXECUTION ROADMAP -->
+      <figure class="diagram-card">
+        <svg viewBox="0 0 980 235" role="img" aria-labelledby="diag2-title">
+          <title id="diag2-title">Execution Roadmap from Pre-Wave through Phases A to F and Verification</title>
+          <!-- Pre-Wave -->
+          <rect x="15" y="25" width="128" height="145" rx="8" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"></rect>
+          <text x="27" y="47" font-size="12" font-weight="700" fill="var(--warn)">Pre-Wave</text>
+          <text x="27" y="65" font-size="11" fill="var(--text)">Owner &amp; Data</text>
+          <text x="27" y="87" font-size="10.5" fill="var(--muted)">&bull; Genz 15–23 Nov</text>
+          <text x="27" y="104" font-size="10.5" fill="var(--muted)">&bull; conflict-review</text>
+          <text x="27" y="121" font-size="10.5" fill="var(--muted)">&bull; family-colour</text>
+          <text x="27" y="138" font-size="10.5" fill="var(--muted)">&bull; Sash hard stop</text>
+          <text x="27" y="155" font-size="10.5" fill="var(--muted)">&bull; Orphan cleanup</text>
+
+          <!-- Phase A -->
+          <rect x="163" y="25" width="125" height="145" rx="8" fill="var(--danger-soft)" stroke="var(--danger)" stroke-width="1.5"></rect>
+          <text x="175" y="47" font-size="12" font-weight="700" fill="var(--danger)">Phase A (P1)</text>
+          <text x="175" y="65" font-size="11" fill="var(--text)">RLS &amp; Write Gate</text>
+          <text x="175" y="90" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-001</text>
+          <text x="175" y="106" font-size="10" fill="var(--muted)">Holds/Staging RLS</text>
+          <text x="175" y="130" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-002</text>
+          <text x="175" y="146" font-size="10" fill="var(--muted)">Inner RPC lock/revoke</text>
+          <text x="175" y="162" font-size="10" fill="var(--danger)">Parallel // Dec #1</text>
+
+          <!-- Phase B -->
+          <rect x="308" y="25" width="125" height="145" rx="8" fill="var(--danger-soft)" stroke="var(--danger)" stroke-width="1.5"></rect>
+          <text x="320" y="47" font-size="12" font-weight="700" fill="var(--danger)">Phase B (P1)</text>
+          <text x="320" y="65" font-size="11" fill="var(--text)">Core &amp; Undo</text>
+          <text x="320" y="90" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-003</text>
+          <text x="320" y="106" font-size="10" fill="var(--muted)">23505 twin + size</text>
+          <text x="320" y="130" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-004</text>
+          <text x="320" y="146" font-size="10" fill="var(--muted)">Unresolved key/alias</text>
+          <text x="320" y="162" font-size="10" fill="var(--danger)">Parallel // Dec #3</text>
+
+          <!-- Phase C -->
+          <rect x="453" y="25" width="125" height="145" rx="8" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="1.5"></rect>
+          <text x="465" y="47" font-size="12" font-weight="700" fill="var(--brand)">Phase C (P2)</text>
+          <text x="465" y="65" font-size="11" fill="var(--text)">Indexes &amp; Guards</text>
+          <text x="465" y="90" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-005</text>
+          <text x="465" y="106" font-size="10" fill="var(--muted)">2 indexes + COLLATE C</text>
+          <text x="465" y="130" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-006</text>
+          <text x="465" y="146" font-size="10" fill="var(--muted)">Genz new_sku arrays</text>
+          <text x="465" y="162" font-size="10" fill="var(--brand)">Decision #2</text>
+
+          <!-- Phase D -->
+          <rect x="598" y="25" width="115" height="145" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"></rect>
+          <text x="610" y="47" font-size="12" font-weight="700" fill="var(--muted)">Phase D (P3)</text>
+          <text x="610" y="65" font-size="11" fill="var(--text)">Hygiene &amp; Docs</text>
+          <text x="610" y="92" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-007</text>
+          <text x="610" y="110" font-size="10" fill="var(--muted)">500-char reason</text>
+          <text x="610" y="126" font-size="10" fill="var(--muted)">readAllPages helper</text>
+          <text x="610" y="142" font-size="10" fill="var(--muted)">unmapped README</text>
+          <text x="610" y="162" font-size="10" fill="var(--muted)">Decision #4</text>
+
+          <!-- Phase E -->
+          <rect x="733" y="25" width="122" height="145" rx="8" fill="var(--purple-soft)" stroke="var(--purple)" stroke-width="1.5"></rect>
+          <text x="745" y="47" font-size="12" font-weight="700" fill="var(--purple)">Phase E (Goal)</text>
+          <text x="745" y="65" font-size="11" fill="var(--text)">ERP Gate &amp; Life</text>
+          <text x="745" y="90" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-008</text>
+          <text x="745" y="106" font-size="10" fill="var(--muted)">erp_item_master gate</text>
+          <text x="745" y="130" font-size="11" font-weight="600" fill="var(--text)">SKU-TCK-009</text>
+          <text x="745" y="146" font-size="10" fill="var(--muted)">Provenance &amp; Audit</text>
+          <text x="745" y="162" font-size="10" fill="var(--purple)">Decisions #5 &amp; #6</text>
+
+          <!-- Phase F -->
+          <rect x="875" y="25" width="90" height="145" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="1.5"></rect>
+          <text x="886" y="47" font-size="12" font-weight="700" fill="var(--ok)">Phase F</text>
+          <text x="886" y="65" font-size="11" fill="var(--text)">Map Once</text>
+          <text x="886" y="92" font-size="11" font-weight="600" fill="var(--text)">TCK-010</text>
+          <text x="886" y="110" font-size="10" fill="var(--muted)">channel_</text>
+          <text x="886" y="124" font-size="10" fill="var(--muted)">listings</text>
+          <text x="886" y="140" font-size="10" fill="var(--muted)">registry</text>
+          <text x="886" y="162" font-size="10" fill="var(--ok)">Dec #7</text>
+
+          <!-- Flow arrows between phases -->
+          <line x1="143" y1="95" x2="160" y2="95" stroke="var(--text)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+          <line x1="288" y1="95" x2="305" y2="95" stroke="var(--text)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+          <line x1="433" y1="95" x2="450" y2="95" stroke="var(--text)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+          <line x1="578" y1="95" x2="595" y2="95" stroke="var(--text)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+          <line x1="713" y1="95" x2="730" y2="95" stroke="var(--text)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+          <line x1="855" y1="95" x2="872" y2="95" stroke="var(--text)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+          <!-- Per-phase verification bar -->
+          <rect x="163" y="185" width="802" height="36" rx="7" fill="var(--surface)" stroke="var(--border)"></rect>
+          <text x="180" y="207" font-size="11.5" font-weight="650" fill="var(--text)">Every Phase Gate:</text>
+          <text x="305" y="207" font-size="11.5" fill="var(--muted)">Test-First SQL/TS &rarr; Build on branch &rarr; verify:fast + sql-test-db + verify:erp &rarr; Single Opus Review &rarr; Operator Deploy Gate</text>
+        </svg>
+        <figcaption><strong>Figure 2:</strong> Bounded execution order — high-severity RLS &amp; crash bugs first (Phases A–B), then performance &amp; hygiene (Phases C–D), then strategic ERP gate &amp; map-once lifecycle (Phases E–F).</figcaption>
+      </figure>
+    </section>
+
+    <!-- SECTION 3: LIVE DB & SHIPPED RECONCILIATION -->
+    <section id="sec-snapshot" class="panel" aria-labelledby="h-snapshot">
+      <p class="eyebrow">3. Ground-Truth Baseline (Reconciled)</p>
+      <h2 id="h-snapshot">Live Database Snapshot vs. Already Shipped Work</h2>
+
+      <div class="callout ok">
+        <strong>Already Shipped in <code>sku-mapping-rebuild</code> (<code>19345270</code> / <code>main @ 734f2fd7</code>) — DO NOT Re-Plan or Overwrite:</strong>
+        Migration <code>20261125100000_mapping_rebuild_ops.sql</code>, <code>Find &amp; edit</code> UI (<code>_components/find-edit/*</code>),
+        <code>GET /api/sku-mapping/lookup</code>, <code>POST /api/sku-mapping/listing-preview</code>,
+        <code>alias_move</code> / <code>alias_clear</code> / <code>code_clear</code> / <code>product_edit</code> ops,
+        <code>genz-guard.ts</code> <code>ONE</code>-size warning (Decision 104.5), <code>suggest.ts</code> <code>missing_size</code> hints,
+        coded Lokal code-only resolution (T04), and confirm-day <code>unmapped &gt; 0</code> gate.
+        <code>SKU-TCK-002</code> and <code>SKU-TCK-005</code> explicitly warn builders to preserve these ops.
+      </div>
+
+      <h3>Gemini Live-DB Read-Only Showroom Snapshot</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th class="num">Active Codes</th>
+              <th class="num">Distinct Variants (Code)</th>
+              <th class="num">Variants w/ 2+ Codes</th>
+              <th class="num">Active Aliases</th>
+              <th class="num">Distinct Variants (Alias)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Genz</strong></td><td class="num">1,433</td><td class="num">1,056</td><td class="num">345 (max 4)</td><td class="num">0</td><td class="num">0</td></tr>
+            <tr><td><strong>locally</strong></td><td class="num">1,212</td><td class="num">1,032</td><td class="num">156 (max 3)</td><td class="num">0</td><td class="num">0</td></tr>
+            <tr><td><strong>lokal</strong></td><td class="num">839</td><td class="num">690</td><td class="num">138 (max 3)</td><td class="num">280</td><td class="num">269</td></tr>
+            <tr><td><strong>mr.local</strong></td><td class="num">569</td><td class="num">504</td><td class="num">65 (max 2)</td><td class="num">339</td><td class="num">339</td></tr>
+            <tr><td><strong>Rizz</strong></td><td class="num">361</td><td class="num">347</td><td class="num">14 (max 2)</td><td class="num">0</td><td class="num">0</td></tr>
+            <tr><td><strong>Sash</strong> (Hard Stop)</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">217</td><td class="num">193</td></tr>
+            <tr><td><strong>Shopify Collective</strong></td><td class="num">154</td><td class="num">154</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+            <tr><td><strong>Shopify Essentials</strong></td><td class="num">95</td><td class="num">95</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted mb-0">
+        On <code>sales_lines</code> (sold rows): 13,282 resolved by <code>sku</code>, 4,296 by <code>code</code>, 1,010 by <code>alias</code>, 87 by <code>inventory</code> (<code>channel_list_prices</code>), 66 by <code>manual</code>, and 1 active hold (<code>Genz: 1007-XS</code>, missing from ERP — the exact ghost-SKU gap <code>SKU-TCK-008</code> eliminates).
+      </p>
+    </section>
+
+    <!-- SECTION 4: BOOKS & PROOF CANONS -->
+    <section id="sec-books" class="panel" aria-labelledby="h-books">
+      <p class="eyebrow">4. Software Engineering Literature &amp; Proof Canons</p>
+      <h2 id="h-books">Why These Books Shaped the Fix Plan (<code>wiki/00..15</code>)</h2>
+      <p class="subtitle">
+        AuditSkill does not guess style opinions — every finding and ticket is grounded in specific engineering canons inside <code>Audit-skill/wiki/</code>.
+      </p>
+
+      <div class="grid-3">
+        <article class="card">
+          <h3>Ousterhout — <em>A Philosophy of Software Design</em></h3>
+          <p class="muted"><code>wiki/01-ousterhout-module-depth.md</code></p>
+          <p class="mb-0">Drove keeping <code>rpc_admin_mapping_edit_with_impact</code> as one deep transactional gateway (<code>TCK-002</code>), skipping pointless churn on tiny wrappers (Decision #4), and avoiding speculative rewrites.</p>
+        </article>
+        <article class="card">
+          <h3>Kleppmann — <em>Designing Data-Intensive Applications</em></h3>
+          <p class="muted"><code>wiki/02-kleppmann-schema-evolution.md</code></p>
+          <p class="mb-0">Drove zero-downtime additive migrations (<code>-- REVERSE:</code>), normalizing via <code>mapping_code_key</code>/<code>mapping_alias_key</code> (<code>TCK-003/005</code>), and protecting exported months via effective-dated <code>forward_only</code> remaps (<code>TCK-009</code>).</p>
+        </article>
+        <article class="card">
+          <h3>Kimball — <em>The Data Warehouse Toolkit</em></h3>
+          <p class="muted"><code>wiki/03-kimball-star-schema-retail.md</code></p>
+          <p class="mb-0">Grounded separating slowly changing dimension truth (<code>erp_item_master</code> + effective-dated <code>channel_codes</code>) from immutable historical fact grains (<code>sales_lines</code>, <code>TCK-008/009</code>).</p>
+        </article>
+        <article class="card">
+          <h3>Evans &amp; Martin — <em>DDD &amp; Clean Architecture</em></h3>
+          <p class="muted"><code>wiki/04-ddd</code> &bull; <code>wiki/09-clean-architecture</code></p>
+          <p class="mb-0">Kept the Frozen ERP Exporter bounded behind <code>sales_lines.seemly_sku</code>, pulled key-normalization truth cleanly to SQL (<code>TCK-005</code>), and isolated portal pre-mapping in <code>channel_listings</code> (<code>TCK-010</code>).</p>
+        </article>
+        <article class="card">
+          <h3>Khorikov &amp; Fowler — <em>Testing &amp; Refactoring</em></h3>
+          <p class="muted"><code>wiki/05-khorikov</code> &bull; <code>wiki/06-fowler</code></p>
+          <p class="mb-0">Requires every ticket (<code>TCK-001</code>..<code>010</code>) to start with a failing SQL/integration test before editing production code, and extracts shared pagination cleanly (<code>readAllPages</code>, <code>TCK-007</code>).</p>
+        </article>
+        <article class="card">
+          <h3>OWASP / Supabase RLS &amp; Postgres Perf</h3>
+          <p class="muted"><code>wiki/13-postgres</code> &bull; <code>wiki/14-owasp-security-and-supabase-rls.md</code></p>
+          <p class="mb-0">Exposed the <code>finance</code> RLS mismatch + inner RPC bypass (<code>TCK-001/002</code>) and identified the unindexed 500-iteration <code>sales_lines</code> full scans under 8-table locks (<code>TCK-005</code>).</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE TICKETS & FINDINGS -->
+    <section id="sec-tickets" class="panel" aria-labelledby="h-tickets">
+      <p class="eyebrow">5. Interactive Walkthrough — All 9 Audit Findings + Gemini Gaps &rarr; Tickets TCK-001 to TCK-010</p>
+      <h2 id="h-tickets">Codebase Fixing Process &amp; Ticket Explorer</h2>
+
+      <div class="accordion-toolbar">
+        <search>
+          <label for="ticket-search" class="sr-only">Filter tickets by keyword, table, RPC, or canon</label>
+          <input id="ticket-search" class="search-input" type="search" placeholder="Search tickets, RPCs, tables, e.g. genz, RLS, erp_item_master, TCK-003...">
+        </search>
+        <button type="button" class="btn" commandfor="tickets-accordion" command="--toggle-all" aria-expanded="false">
+          <span class="expand-label">Expand all tickets</span>
+          <span class="collapse-label">Collapse all tickets</span>
+        </button>
+      </div>
+
+      <div class="filter-bar" role="group" aria-label="Filter tickets by phase or priority">
+        <button type="button" class="filter-btn" data-filter="all" aria-pressed="true">All (10)</button>
+        <button type="button" class="filter-btn" data-filter="phase-a" aria-pressed="false">Phase A (Security)</button>
+        <button type="button" class="filter-btn" data-filter="phase-b" aria-pressed="false">Phase B (Core/Undo)</button>
+        <button type="button" class="filter-btn" data-filter="phase-c" aria-pressed="false">Phase C (Perf/Genz)</button>
+        <button type="button" class="filter-btn" data-filter="phase-d" aria-pressed="false">Phase D (Hygiene)</button>
+        <button type="button" class="filter-btn" data-filter="phase-e" aria-pressed="false">Phase E (ERP &amp; Life)</button>
+        <button type="button" class="filter-btn" data-filter="phase-f" aria-pressed="false">Phase F (Listings)</button>
+      </div>
+
+      <div id="tickets-accordion" class="accordion">
+        <!-- TCK-001 -->
+        <details data-phase="phase-a" data-tags="rls finance holds staged-aliases userdb admindb aud-001 owasp">
+          <summary>
+            <span class="phase-chip">Phase A</span>
+            <span class="badge danger">P1 High</span>
+            <span>SKU-TCK-001 &mdash; Align RLS on holds, staging &amp; automap to <code>is_mapping_operator_role()</code></span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Finding:</strong> <code>SKU-AUD-001</code> &bull; <strong>Canon:</strong> OWASP &amp; Supabase RLS (<code>wiki/14</code>) &bull; <strong>Schema lines:</strong> <code>15462, 15475, 15566, 15618</code></p>
+            <p><strong>Why it happens:</strong> <code>channel_mapping_holds</code>, <code>channel_alias_staging</code>, <code>automap_batches</code>, and <code>automap_actions</code> grant <code>SELECT</code> via <code>is_ops_role()</code> (<code>operations</code>, <code>customer_support</code>), while <code>skuMapping.edit</code> is <code>is_mapping_operator_role()</code> (<code>admin</code>, <code>manager</code>, <code>finance</code>). So <code>finance</code> silently sees 0 holds in <code>import-preview</code>/<code>export</code>, and <code>GET /api/sku-mapping/staged-aliases</code> bypasses RLS with <code>adminDb</code>.</p>
+            <p><strong>Fix &amp; Proof:</strong> Additive migration switching those 4 <code>SELECT</code> policies to <code>(SELECT public.is_mapping_operator_role())</code> + switching <code>staged-aliases</code> GET to <code>userDb</code> + failing SQL test proving <code>finance</code> sees holds &amp; <code>operations</code> sees 0 rows.</p>
+          </div>
+        </details>
+
+        <!-- TCK-002 -->
+        <details data-phase="phase-a" data-tags="rpc security revoke bypass lock p_expected_impact single aud-004 rebuild">
+          <summary>
+            <span class="phase-chip">Phase A</span>
+            <span class="badge danger">P1 High</span>
+            <span>SKU-TCK-002 &mdash; Harden single-edit RPC &amp; revoke direct <code>authenticated</code> inner write RPCs</span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Finding:</strong> <code>SKU-AUD-004</code> &bull; <strong>Requires:</strong> Decision #1 &bull; <strong>Schema lines:</strong> <code>2710-2819, 2826-2873</code></p>
+            <p><strong>Why it happens:</strong> <code>rpc_admin_edit_channel_mapping</code> selects an existing code with unordered <code>LIMIT 1</code> (unlike batch edit), skips the post-update multi-item lokal race guard, and omits <code>pg_temp</code> in <code>search_path</code>. Meanwhile, inner RPCs remain executable directly by <code>authenticated</code>, bypassing <code>p_expected_impact</code> and lock ordering.</p>
+            <p><strong>Self-Check Guardrail:</strong> Builders MUST start from <code>20261125100000_mapping_rebuild_ops.sql</code> so <code>alias_move</code>, <code>alias_clear</code>, <code>code_clear</code>, <code>product_edit</code>, and <code>channel_aliases</code> row locks are preserved.</p>
+          </div>
+        </details>
+
+        <!-- TCK-003 -->
+        <details data-phase="phase-b" data-tags="23505 twin crash size sales_lines automap undo aud-002 aud-008">
+          <summary>
+            <span class="phase-chip">Phase B</span>
+            <span class="badge danger">P1 High</span>
+            <span>SKU-TCK-003 &mdash; Fix <code>rpc_map_unmapped_line</code> normalized twin crash (23505), <code>size</code> write &amp; undo snapshots</span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Findings:</strong> <code>SKU-AUD-002</code> + <code>SKU-AUD-008</code> &bull; <strong>Schema lines:</strong> <code>3448-3755, 5403-5570</code></p>
+            <p><strong>Why it happens:</strong> Inserting with <code>ON CONFLICT (channel_id, code)</code> or <code>(channel_id, product_text)</code> fails on normalized unique indexes (HTTP 500 <code>23505</code>) whenever spacing/casing differs for the same SKU; both updates omit <code>size = v.size</code>; and <code>rpc_automap_apply_item</code>/<code>undo</code> omits <code>size</code> snapshots and queries exact text instead of normalized key twins.</p>
+            <p><strong>Fix &amp; Proof:</strong> Deterministically look up &amp; reactivate normalized code/alias twins, stamp <code>size = v.size</code> + lokal post-check, snapshot <code>size</code> in automap, and update tests.</p>
+          </div>
+        </details>
+
+        <!-- TCK-004 -->
+        <details data-phase="phase-b" data-tags="unresolved queue collapse sash alias code rpc_unresolved_sales aud-003">
+          <summary>
+            <span class="phase-chip">Phase B</span>
+            <span class="badge danger">P1 High</span>
+            <span>SKU-TCK-004 &mdash; Stop collapsing code-less products in <code>rpc_unresolved_sales</code></span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Finding:</strong> <code>SKU-AUD-003</code> &bull; <strong>Requires:</strong> Decision #3 &bull; <strong>Schema lines:</strong> <code>8815-8882</code></p>
+            <p><strong>Why it happens:</strong> <code>rpc_unresolved_sales</code> groups solely by <code>(channel_id, c.name, channel_code)</code>, collapsing ALL code-less unmapped products per channel into a single card while splitting case/space-variant codes.</p>
+            <p><strong>Fix &amp; Proof:</strong> Partition by normalized <code>(channel_id, key_kind, key_norm)</code> via <code>mapping_code_key</code> / <code>mapping_alias_key</code> while keeping UI JSON keys intact.</p>
+          </div>
+        </details>
+
+        <!-- TCK-005 -->
+        <details data-phase="phase-c" data-tags="index performance collate staging unique lock scan aud-005 aud-007">
+          <summary>
+            <span class="phase-chip">Phase C</span>
+            <span class="badge brand">P2 Medium</span>
+            <span>SKU-TCK-005 &mdash; Functional <code>sales_lines</code> indexes, <code>COLLATE "C"</code> parity &amp; pending staging dedup</span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Findings:</strong> <code>SKU-AUD-005</code> + <code>SKU-AUD-007</code> &bull; <strong>Requires:</strong> Decision #2 &bull; <strong>Schema lines:</strong> <code>1420-1435, 5224-5315, 7383-7553, 8444-8490, 13738</code></p>
+            <p><strong>Why it happens:</strong> Batch edits run up to 500 per-channel updates against <code>sales_lines</code> under 8-table <code>SHARE ROW EXCLUSIVE</code> locks without functional indexes on <code>mapping_code_key(channel_code)</code> or <code>mapping_alias_key(channel_product)</code>; inline <code>lower(regexp_replace(...))</code> drifts from <code>COLLATE "C"</code>; <code>channel_alias_staging</code> can insert duplicate pending rows when casing differs.</p>
+            <p><strong>Self-Check Guardrail:</strong> No <code>CONCURRENTLY</code> (single-transaction runner), use <code>SET LOCAL lock_timeout = '5s'</code>, and start from post-<code>20261125100000</code> batch/impact RPCs.</p>
+          </div>
+        </details>
+
+        <!-- TCK-006 -->
+        <details data-phase="phase-c" data-tags="genz guard latesttext new_sku one size aud-006">
+          <summary>
+            <span class="phase-chip">Phase C</span>
+            <span class="badge brand">P2 Medium</span>
+            <span>SKU-TCK-006 &mdash; Normalize Genz <code>latestText</code> &amp; enforce Genz guard on <code>new_sku.codes</code></span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Finding:</strong> <code>SKU-AUD-006</code> &bull; <strong>Files:</strong> <code>src/lib/sku-mapping/genz-guard-repo.ts</code>, <code>mapping-edit.ts</code></p>
+            <p><strong>Why it happens:</strong> <code>latestText</code> uses exact <code>.eq('channel_code', code)</code> (missing space/case variants in ledger), and <code>codeEditsOf</code> ignores <code>{ kind: 'new_sku', codes: { Genz: ... } }</code> batches.</p>
+            <p><strong>Self-Check Guardrail:</strong> Handle BOTH scalar string AND <code>string[]</code> in <code>new_sku.codes.Genz</code> (<code>20261125100000:271-279</code>) and keep Decision 104.5 <code>ONE</code>-size warning intact.</p>
+          </div>
+        </details>
+
+        <!-- TCK-007 -->
+        <details data-phase="phase-d" data-tags="reason 500 dry readallpages readme cleanup aud-009">
+          <summary>
+            <span class="phase-chip">Phase D</span>
+            <span class="badge">P3 Low</span>
+            <span>SKU-TCK-007 &mdash; Cap staged-alias <code>reason</code> at 500 chars, share <code>readAllPages</code> &amp; fix README</span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Finding:</strong> <code>SKU-AUD-009</code> &bull; <strong>Requires:</strong> Decision #4 &bull; <strong>Files:</strong> <code>schema.ts</code>, 5 <code>*-repo.ts</code> files, <code>api/unmapped/README.md</code></p>
+            <p><strong>Fixes:</strong> Align <code>approveStagedSchema</code>/<code>rejectStagedBody</code> and <code>rpc_resolve_staged_alias</code> (`schema.sql:7408`) to the 500-char limit; deduplicate the 5 identical 1,000-row Supabase loops into one shared helper; fix <code>README.md</code> capability from <code>erp.operate</code> to <code>skuMapping.edit</code>.</p>
+          </div>
+        </details>
+
+        <!-- TCK-008 -->
+        <details data-phase="phase-e" data-tags="erp_item_master erp ghost sku 1007-xs 5001 5002 5015 5016 gemini goal">
+          <summary>
+            <span class="phase-chip">Phase E</span>
+            <span class="badge purple">Goal L1</span>
+            <span>SKU-TCK-008 &mdash; Authoritative <code>public.erp_item_master</code> table &amp; pre-export ERP SKU gate</span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Source:</strong> <code>GOAL-ARCHITECTURE.md</code> Layer 1 + Gemini Gap B + Decisions 60 &amp; 63 &bull; <strong>Requires:</strong> Decision #5</p>
+            <p><strong>What it builds:</strong> <code>public.erp_item_master(erp_sku PK, erp_sku_norm, erp_group, active, synced_at)</code> + CSV import/sync API/UI + write gate on <code>new_sku</code>/<code>variants</code> creation + pre-export check flagging any sold <code>seemly_sku</code> missing from ERP — eliminating <code>1007-XS</code> errors cleanly <strong>without modifying frozen <code>rpc_erp_export_source</code> or <code>src/lib/erp/**</code></strong>. Also executes Decision 63 (<code>5001/5002 &rarr; 5015/5016</code>) once ERP Item Master confirms <code>5015/5016</code>.</p>
+          </div>
+        </details>
+
+        <!-- TCK-009 -->
+        <details data-phase="phase-e" data-tags="provenance verified seasonal valid_from valid_to forward_only inventory list_prices audit integrity.md gemini">
+          <summary>
+            <span class="phase-chip">Phase E</span>
+            <span class="badge purple">Goal L2</span>
+            <span>SKU-TCK-009 &mdash; Provenance badges, <code>forward_only</code> effective-dated remaps, split-brain closure &amp; <code>rpc_wiring_health_audit()</code></span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Source:</strong> <code>GOAL-ARCHITECTURE.md</code> Layer 2 + Gemini Gaps A, C, D, E &bull; <strong>Requires:</strong> Decision #6</p>
+            <p><strong>What it builds:</strong></p>
+            <ul class="mb-0">
+              <li>Adds <code>verification_status</code> (<code>verified</code>/<code>unverified</code>/<code>disputed</code>), <code>verified_at</code>, <code>verified_by</code>, <code>source</code>, <code>season_tag</code>, plus optional <code>valid_from</code>/<code>valid_to</code> (keeping N:1 active codes intact!).</li>
+              <li>Adds <code>remap_mode</code> (<code>forward_only</code> default when hitting confirmed/exported periods vs explicit <code>rewrite_all</code> override) and a UI confirm prompt before attaching a 2nd+ active code on a variant.</li>
+              <li>Closes split-brain: normalizes <code>channel_list_prices</code> by <code>mapping_alias_key</code> and upgrades <code>mapping_method = 'inventory'</code> rows during <code>rpc_resolve_staged_alias</code> / <code>alias_move</code> (explicitly updating <code>INTEGRITY.md:39-41</code> &amp; <code>resolve-staged*.test.ts</code>).</li>
+              <li>Adds Postgres Genz prefix-size trigger/helper (honoring <code>ONE</code>-size exemption) + <code>rpc_wiring_health_audit()</code> dashboard/API.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- TCK-010 -->
+        <details data-phase="phase-f" data-tags="channel_listings pre-sale map once genz 0/0 stock catalogue goal">
+          <summary>
+            <span class="phase-chip">Phase F</span>
+            <span class="badge ok">Goal L2</span>
+            <span>SKU-TCK-010 &mdash; Map-once <code>channel_listings</code> registry (before first sale)</span>
+          </summary>
+          <div class="ticket-body">
+            <p><strong>Source:</strong> <code>GOAL-ARCHITECTURE.md</code> Layer 2 + Decisions 58–59 &bull; <strong>Requires:</strong> Decision #7</p>
+            <p><strong>What it builds:</strong> <code>public.channel_listings</code> storing portal catalogue/stock listings and Genz <code>0/0</code> unsold rows, wired into <code>/api/sku-mapping/listing-preview</code> and a "New listings to map" queue so new garments are mapped cleanly before their first sale hits the ledger.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- SECTION 6: DECISIONS & PRE-WAVE -->
+    <section id="sec-decisions" class="panel" aria-labelledby="h-decisions">
+      <p class="eyebrow">6. Operator Approval Gate (Phase 2 &rarr; Phase 3)</p>
+      <h2 id="h-decisions">Pre-Wave Backlog &amp; Your 7 Numbered Decisions</h2>
+      <p class="subtitle">
+        Saying <strong>"Yes"</strong> accepts the recommended option on all 7 decisions below and unlocks creating the branch in <code>seemlyops</code> for Phase A.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Decision</th>
+              <th>Ticket</th>
+              <th>Recommended Default ("Yes" accepts)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>1</strong></td><td>Revoke direct <code>authenticated</code> <code>EXECUTE</code> on inner write RPCs?</td><td><code>SKU-TCK-002</code></td><td><strong>Yes</strong> — require all user edits through <code>rpc_admin_mapping_edit_with_impact</code>; update SQL tests.</td></tr>
+            <tr><td><strong>2</strong></td><td>Add partial unique index on pending <code>channel_alias_staging</code>?</td><td><code>SKU-TCK-005</code></td><td><strong>Yes</strong> — check prod read-only first, then enforce normalized uniqueness + dedup in import RPC.</td></tr>
+            <tr><td><strong>3</strong></td><td>Count code-less unresolved groups inside <code>rpc_unresolved_sales</code> <code>totals.codes</code>?</td><td><code>SKU-TCK-004</code></td><td><strong>Yes</strong> — count all distinct unresolved <code>(channel_id, key_kind, key_norm)</code> items while keeping UI JSON keys stable.</td></tr>
+            <tr><td><strong>4</strong></td><td>Keep shallow <code>holds.ts</code> wrapper as-is?</td><td><code>SKU-TCK-007</code></td><td><strong>Yes</strong> — keep it to avoid cross-file churn; focus on 500-char limit, <code>readAllPages</code>, and README fix.</td></tr>
+            <tr><td><strong>5</strong></td><td>Strictness of <code>erp_item_master</code> gate &amp; <code>5001/5002 &rarr; 5015/5016</code> timing?</td><td><code>SKU-TCK-008</code></td><td><strong>Yes</strong> — enforce strictly once <code>erp_item_master</code> is populated; run <code>5001/5002</code> remap only after accountant list confirms <code>5015/5016</code>.</td></tr>
+            <tr><td><strong>6</strong></td><td>Default <code>remap_mode</code> when editing mappings hitting confirmed/exported periods?</td><td><code>SKU-TCK-009</code></td><td><strong>Yes</strong> — default to <code>'forward_only'</code> with explicit <code>rewrite_all</code> checkbox + reason for intentional restatements.</td></tr>
+            <tr><td><strong>7</strong></td><td>Initial scope of <code>channel_listings</code> map-once registry?</td><td><code>SKU-TCK-010</code></td><td><strong>Yes</strong> — start with Genz <code>0/0</code> unsold capture + portal CSV stock lists for <code>lokal</code>, <code>locally</code>, <code>mr.local</code>, <code>shopify</code> (Sash stays excluded).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn mb-0">
+        <strong>Pre-Wave Operational Owner Queue (Non-Code, from <code>sku-review</code>):</strong>
+        1) Retry Genz 15–23 Nov import &amp; verify net; 2) Review <code>conflict-review.md</code> (Genz colour 36, <code>70034</code>/<code>11062</code>, <code>2042-xs</code>);
+        3) Approve <code>family-colour-proposal.md</code> (329 products &rarr; 87 families); 4) <strong>Sash Hard Stop (Dec 95/102)</strong> stays locked until team confirms list;
+        5) Read-only check &amp; approved cleanup of 244 orphaned staging batch FKs + <code>sales_lines.size</code> NULL backfill.
+      </div>
+    </section>
+
+    <!-- SECTION 7: CLAUDE CODE HANDOFF -->
+    <section id="sec-handoff" class="panel" aria-labelledby="h-handoff">
+      <p class="eyebrow">7. Ready-to-Run Phase 3 Handoff</p>
+      <h2 id="h-handoff">Reviewed Markdown Files &amp; Claude Code Execution Prompt</h2>
+      <p>
+        Once you confirm Decisions #1–#7 (in <code>~/Jou-ws/Plans/decisions.md</code>), pass these exact reviewed files inside
+        <code>/home/joubie/Audit-skill/sku mapping/</code> to Claude Code using the prompt below:
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Core Architecture &amp; Phase Pack</h3>
+          <ul class="mb-0">
+            <li><code>GOAL-ARCHITECTURE.md</code> &mdash; Target 3-layer blueprint &amp; invariants</li>
+            <li><code>phases/phase-1-baseline.md</code> &mdash; Read-only baseline checks (280 tests)</li>
+            <li><code>phases/phase-2-plan.md</code> &mdash; Master Phases A–F + Decisions #1–#7 + Self-Check</li>
+            <li><code>BRIEF.md</code> &mdash; Frozen ERP &amp; audit boundaries</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Detailed Findings &amp; Bounded Tickets</h3>
+          <ul class="mb-0">
+            <li><code>findings/SKU-AUD-001.md</code> .. <code>SKU-AUD-009.md</code> (lines verified post-<code>20261125100000</code>)</li>
+            <li><code>tickets/SKU-TCK-001.md</code> .. <code>SKU-TCK-007.md</code> (Phases A–D remediation)</li>
+            <li><code>tickets/SKU-TCK-008.md</code> .. <code>SKU-TCK-010.md</code> (Phases E–F Goal Architecture)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-1">
+        <div class="prompt-box-head">
+          <h3 id="prompt-caption" class="mb-0">Claude Code Phase 3 Execution Prompt</h3>
+          <div>
+            <span id="copy-status" class="copy-status" aria-live="polite"></span>
+            <button type="button" id="copy-prompt-btn" class="btn btn-primary copy-btn">Copy prompt</button>
+          </div>
+        </div>
+        <pre role="region" aria-labelledby="prompt-caption" tabindex="0"><code id="claude-prompt">Execute Phase 3 of the audited SeemlyOps SKU Mapping plan cleanly inside a new branch/worktree of ~/Code/seemlyops, strictly under ~/Jou-ws/AGENTS.md and ~/Code/seemlyops/CLAUDE.md.
+
+Read first (in /home/joubie/Audit-skill/sku mapping/):
+1. phases/phase-2-plan.md (master plan, Decisions #1-#7, and Section 7 Self-Check notes)
+2. GOAL-ARCHITECTURE.md
+3. The tickets for the current phase: tickets/SKU-TCK-001.md .. tickets/SKU-TCK-010.md (with findings/SKU-AUD-001..009.md as evidence).
+
+Approved Decisions from Jooubie:
+- Decisions #1-#7: [PASTE YOUR ANSWERS OR "Recommended yes to all #1-#7"].
+- Start with Phase A (SKU-TCK-001 & SKU-TCK-002 in parallel worktrees via seemly-data / seemly-backend), then run verify:fast + sql-test-db.sh + verify:erp, then one fresh Opus reviewer pass on the Phase A diff before moving to Phase B.
+
+Non-negotiable guardrails:
+- NEVER modify src/lib/erp/**, fixtures/**, scripts/verify-erp-*, or rpc_erp_export_source (checksum must remain 1eaf531368b23a3f56f3bf4ebe0ce67a).
+- NEVER drop features shipped in 20261125100000_mapping_rebuild_ops.sql (alias_move, alias_clear, code_clear, product_edit, channel_aliases lock, ONE-size warning, Find & edit).
+- Preserve Sash hard stop (Decision 95/102). Write failing SQL/TS tests first for every ticket. Stop before any deploy or production push.</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer container">
+    <p class="mb-0">
+      Generated from the self-checked Phase 2 workspace in <code>/home/joubie/Audit-skill/sku mapping/</code>. Zero edits made to <code>~/Code/seemlyops</code> or <code>~/Jou-ws</code>.
+    </p>
+  </footer>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const themeButtons = document.querySelectorAll('.theme-btn');
+
+      const setTheme = (mode) => {
+        root.setAttribute('data-theme', mode);
+        themeButtons.forEach((btn) => {
+          btn.setAttribute('aria-pressed', String(btn.dataset.setTheme === mode));
+        });
+      };
+
+      themeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => setTheme(btn.dataset.setTheme));
+      });
+
+      // Expand/Collapse all using progressive command pattern + click fallback
+      const toggleBtn = document.querySelector('[command="--toggle-all"]');
+      const accordion = document.getElementById('tickets-accordion');
+
+      const syncToggleState = () => {
+        const visibleDetails = Array.from(accordion.querySelectorAll(':scope > details')).filter((d) => !d.hidden);
+        const allOpen = visibleDetails.length > 0 && visibleDetails.every((d) => d.open);
+        toggleBtn.setAttribute('aria-expanded', String(allOpen));
+      };
+
+      const toggleAllVisible = () => {
+        const expand = toggleBtn.getAttribute('aria-expanded') !== 'true';
+        accordion.querySelectorAll(':scope > details').forEach((d) => {
+          if (!d.hidden) d.open = expand;
+        });
+        syncToggleState();
+      };
+
+      if (Object.hasOwn(HTMLButtonElement.prototype, 'commandForElement')) {
+        document.addEventListener('command', (event) => {
+          if (event.command !== '--toggle-all') return;
+          toggleAllVisible();
+        }, { capture: true });
+      } else {
+        toggleBtn.addEventListener('click', toggleAllVisible);
+      }
+
+      document.addEventListener('toggle', (event) => {
+        if (event.target.matches('#tickets-accordion > details')) syncToggleState();
+      }, { capture: true });
+
+      // Search & Phase filter
+      const searchInput = document.getElementById('ticket-search');
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      let activePhase = 'all';
+
+      const applyFilter = () => {
+        const q = searchInput.value.trim().toLowerCase();
+        accordion.querySelectorAll(':scope > details').forEach((item) => {
+          const matchesPhase = activePhase === 'all' || item.dataset.phase === activePhase;
+          const haystack = `${item.dataset.tags || ''} ${item.textContent}`.toLowerCase();
+          const matchesQuery = !q || haystack.includes(q);
+          item.hidden = !(matchesPhase && matchesQuery);
+        });
+        syncToggleState();
+      };
+
+      searchInput.addEventListener('input', applyFilter);
+      filterButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activePhase = btn.dataset.filter;
+          filterButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+          applyFilter();
+        });
+      });
+
+      // Copy prompt helper
+      const copyBtn = document.getElementById('copy-prompt-btn');
+      const promptEl = document.getElementById('claude-prompt');
+      const statusEl = document.getElementById('copy-status');
+
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(promptEl.textContent);
+          statusEl.textContent = 'Copied to clipboard!';
+        } catch {
+          statusEl.textContent = 'Select and copy the prompt block.';
+        }
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+      });
+
+      // Download self as standalone .html file
+      const downloadBtn = document.getElementById('download-self-btn');
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+          const htmlSource = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+          const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'SKU-MAPPING-MASTER-PLAN.html';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
